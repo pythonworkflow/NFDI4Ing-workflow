@@ -1,0 +1,7 @@
+channels:
+- conda-forge
+dependencies:
+- python =3.12
+- conda_subprocess =0.0.6
+- pip:
+  - python-workflow-definition==0.0.1
