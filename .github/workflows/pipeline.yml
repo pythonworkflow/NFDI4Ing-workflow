@@ -7,7 +7,7 @@ on:
 
 jobs:
   aiida:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - name: Conda config
@@ -27,7 +27,7 @@ jobs:
         python test_with_aiida.py
 
   jobflow:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - name: Conda config
@@ -46,7 +46,7 @@ jobs:
         python test_with_jobflow.py
 
   pyiron:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - name: Conda config
