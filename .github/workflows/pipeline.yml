@@ -96,6 +96,6 @@ jobs:
         conda env create -n preprocessing -f source/envs/preprocessing.yaml -y
         conda env create -n processing -f source/envs/processing.yaml -y
         conda env create -n postprocessing -f source/envs/postprocessing.yaml -y
-        echo -e 'from python_workflow_definition.cwl import write_workflow\n\n\nif __name__ == "__main__":\n    with open("workflow.json") as f:\n        content = json.load(f)\n    node_lst = []\n    for n in content["nodes"]:\n        if "name" in n and n["name"] == "source_directory":\n            n["value"] = os.path.abspath(n["value"])\n        node_lst.append(n)\n    content["nodes"] = node_lst\n    with open("workflow.json", "w") as f:\n        json.dump(content, f)\n    write_workflow(file_name="workflow.json")' > test_with_cwl.py
+        echo -e 'import os\nimport json\nfrom python_workflow_definition.cwl import write_workflow\n\n\nif __name__ == "__main__":\n    with open("workflow.json") as f:\n        content = json.load(f)\n    node_lst = []\n    for n in content["nodes"]:\n        if "name" in n and n["name"] == "source_directory":\n            n["value"] = os.path.abspath(n["value"])\n        node_lst.append(n)\n    content["nodes"] = node_lst\n    with open("workflow.json", "w") as f:\n        json.dump(content, f)\n    write_workflow(file_name="workflow.json")' > test_with_cwl.py
         python test_with_cwl.py
         cwltool --preserve-environment=CONDA_EXE workflow.cwl workflow.yml
