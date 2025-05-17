@@ -21,6 +21,7 @@ jobs:
     - name: Test
       shell: bash -l {0}
       run: |
+        conda install -c conda-forge -y aiida-workgraph=0.5.2
         sudo apt-get install -y $(cat apt.txt)
         conda env create -n preprocessing -f source/envs/preprocessing.yaml -y
         conda env create -n processing -f source/envs/processing.yaml -y
@@ -44,6 +45,7 @@ jobs:
     - name: Test
       shell: bash -l {0}
       run: |
+        conda install -c conda-forge -y jobflow=0.1.19
         sudo apt-get install -y $(cat apt.txt)
         conda env create -n preprocessing -f source/envs/preprocessing.yaml -y
         conda env create -n processing -f source/envs/processing.yaml -y
@@ -66,9 +68,34 @@ jobs:
     - name: Test
       shell: bash -l {0}
       run: |
+        conda install -c conda-forge -y pyiron_base=0.11.11
         sudo apt-get install -y $(cat apt.txt)
         conda env create -n preprocessing -f source/envs/preprocessing.yaml -y
         conda env create -n processing -f source/envs/processing.yaml -y
         conda env create -n postprocessing -f source/envs/postprocessing.yaml -y
         echo -e 'from python_workflow_definition.pyiron_base import load_workflow_json\n\n\nif __name__ == "__main__":\n    delayed_object_lst = load_workflow_json(file_name="workflow.json")\n    print(delayed_object_lst[-1].pull())' > test_with_pyiron.py
         python test_with_pyiron.py
+
+  cwl:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Conda config
+      run: echo -e "channels:\n  - conda-forge\n" > .condarc
+    - uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: "3.12"
+        miniforge-version: latest
+        condarc-file: .condarc
+        environment-file: environment.yml
+    - name: Test
+      shell: bash -l {0}
+      run: |
+        conda install -c conda-forge -y cwltool=3.1.20250110105449
+        sudo apt-get install -y $(cat apt.txt)
+        conda env create -n preprocessing -f source/envs/preprocessing.yaml -y
+        conda env create -n processing -f source/envs/processing.yaml -y
+        conda env create -n postprocessing -f source/envs/postprocessing.yaml -y
+        echo -e 'import os\nimport json\nfrom python_workflow_definition.cwl import write_workflow\n\n\nif __name__ == "__main__":\n    with open("workflow.json") as f:\n        content = json.load(f)\n    node_lst = []\n    for n in content["nodes"]:\n        if "name" in n and n["name"] == "source_directory":\n            n["value"] = os.path.abspath(n["value"])\n        node_lst.append(n)\n    content["nodes"] = node_lst\n    with open("workflow.json", "w") as f:\n        json.dump(content, f)\n    write_workflow(file_name="workflow.json")' > test_with_cwl.py
+        python test_with_cwl.py
+        cwltool --preserve-environment=CONDA_EXE workflow.cwl workflow.yml
