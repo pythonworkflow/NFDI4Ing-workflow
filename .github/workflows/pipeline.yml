@@ -77,7 +77,7 @@ jobs:
         python test_with_pyiron.py
 
   cwl:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - name: Conda config
@@ -98,4 +98,4 @@ jobs:
         conda env create -n postprocessing -f source/envs/postprocessing.yaml -y
         echo -e 'from python_workflow_definition.cwl import write_workflow\n\n\nif __name__ == "__main__":\n    with open("workflow.json") as f:\n        content = json.load(f)\n    node_lst = []\n    for n in content["nodes"]:\n        if "name" in n and n["name"] == "source_directory":\n            n["value"] = os.path.abspath(n["value"])\n        node_lst.append(n)\n    content["nodes"] = node_lst\n    with open("workflow.json", "w") as f:\n        json.dump(content, f)\n    write_workflow(file_name="workflow.json")' > test_with_cwl.py
         python test_with_cwl.py
-        cwltool workflow.cwl workflow.yml
+        cwltool --preserve-environment=CONDA_EXE workflow.cwl workflow.yml
