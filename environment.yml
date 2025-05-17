@@ -3,4 +3,4 @@ channels:
 dependencies:
 - python =3.12
 - python-workflow-definition =0.1.0
-- conda_subprocess =0.0.7
+- conda_subprocess =0.0.6
