@@ -2,5 +2,5 @@ channels:
 - conda-forge
 dependencies:
 - python =3.12
-- python-workflow-definition =0.0.1
-- conda_subprocess =0.0.6
+- python-workflow-definition =0.1.0
+- conda_subprocess =0.0.7
